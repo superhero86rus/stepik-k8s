@@ -64,4 +64,34 @@ kubectl get nodes -owide
 # play-with-k8s.com, katacoda.com, rotoro.cloud
 
 # Minikube - предварительно настроенный одноузловой кластер kubernetes
+
+# Установка kubectl
+sudo apt update
+sudo apt install -y apt-transport-https ca-certificates curl
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt update
+sudo apt-get install -y kubectl
+
+# Установка minikube
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+  && chmod +x minikube
+
+sudo mkdir -p /usr/local/bin/
+sudo install minikube /usr/local/bin/
+
+# Запускаем в докере
+minikube start --vm-driver=docker
+
+# Проверяем статус
+minikube status
+kubectl get po -A
+
+kubectl create deployment hello-minikube --image=kicbase/echo-server:1.0
+kubectl expose deployment hello-minikube --type=NodePort --port=8080
+
+kubectl get services hello-minikube
+
+# Проверяем в баузере
+minikube service hello-minikube
 ```
