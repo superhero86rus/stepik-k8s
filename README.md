@@ -158,6 +158,78 @@ spec:
 
 # Теперь можно создавать под на основе файла конфигурации
 kubectl create -f pod-definition.yml
+# Если мы решили поменять конфигурацию (меняем файл и применяем настройки)
+kubectl apply -f pod-definition.yml
+# Или так
+kubectl edit pod myapp-pod
+
 kubectl get pods
 kubectl describe pod myapp-pod
+```
+
+### ReplicaSet
+```txt
+Replication Controller - старая технология, сейчас используется ReplicaSet
+С помощью selector, ReplicaSet может управлять подами, не созданными с помощью RS
+Кол-во реплик можно увеличить с помощью команды kubectl scale --replicas=6 -f rs-definition.yml
+```
+```yaml
+# Replication Controller
+# rc-definition.yml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: myapp-rc
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+replicas: 3
+```
+```bash
+kubectl create -f rc-definition.yml
+kubectl get replicationcontroller
+kubectl get pods
+```
+```yaml
+# rs-definition.yml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-rs
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+replicas: 3
+selector:
+  matchlabels:
+    type: front-end
+```
+```bash
+kubectl create -f rs-definition.yml
+kubectl get replicaset
+kubectl get pods
+kubectl scale --replicas=6 -f rs-definition.yml
+kubectl get pods
 ```
