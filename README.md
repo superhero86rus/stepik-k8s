@@ -63,7 +63,7 @@ kubectl get nodes -owide
 # AWS, GCP, Azure
 # play-with-k8s.com, katacoda.com, rotoro.cloud
 
-# Minikube - предварительно настроенный одноузловой кластер kubernetes
+# Minikube - предварительно настроенный одноузловой кластер kubernetes, который является и мастером и воркером
 
 # Установка kubectl
 sudo apt update
@@ -94,6 +94,9 @@ kubectl get services hello-minikube
 
 # Проверяем в баузере
 minikube service hello-minikube
+
+# Удаление minikube
+minikube delete
 ```
 
 ### Kubeadm
@@ -105,4 +108,56 @@ minikube service hello-minikube
 Инициализация мастер узла
 Настройка Pod Network
 Подключение рабочих узлов
+```
+
+### Абстракции kubernetes
+#### PODs
+```txt
+В идеале, один под - один контейнер
+Можно в поде хранить несколько контейнеров, но для масштабирования приложения, лучше чтобы был контейнер другого типа
+```
+```bash
+# добавляем pod в котором будет контейнер из образа nginx
+kubectl run nginx --image nginx
+# список подов и статус
+kubectl get pods -owide
+# посмотреть информацию о поде
+kubectl describe pod nginx
+```
+
+#### YAML
+```txt
+Массив:
+  - Элемент1
+  - Элемент 2
+
+Список ключ-значений:
+  ключ1: значение1
+  ключ2: значение2
+```
+
+### PODs + YAML
+```txt
+Манифест кубернетес всегда содержит 4 верхнеуровневых поля: apiVersion, king, metadata, spec
+kind - тип создаваемого обьекта: Pod, Service, ReplicaSet, Deployment
+metadata - данные об объекте
+```
+```yaml
+# pod-definition.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+
+# Теперь можно создавать под на основе файла конфигурации
+kubectl create -f pod-definition.yml
+kubectl get pods
+kubectl describe pod myapp-pod
 ```
