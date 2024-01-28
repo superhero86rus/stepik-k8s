@@ -221,10 +221,10 @@ spec:
       containers:
         - name: nginx-container
           image: nginx
-replicas: 3
-selector:
-  matchlabels:
-    type: front-end
+  replicas: 3
+  selector:
+    matchlabels:
+      type: front-end
 ```
 ```bash
 kubectl create -f rs-definition.yml
