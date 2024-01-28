@@ -239,7 +239,7 @@ kubectl get pods
 Следующщий уровень абстракции над ReplicaSet
 ```
 ```yaml
-# eployment-definition.yml
+# deployment-definition.yml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -270,4 +270,25 @@ kubectl get replicaset
 kubectl get pods
 
 kubectl get all
+```
+
+### Версионирование и откат Deployments
+```txt
+Rollout - процесс постепенного обновления контейнеров
+
+2 стратегии развертывания
+1: Recreate. Выключение и деплой нового контейнера.
+2: Rolling Update. Останавливается старый, поднимается новый.
+```
+```bash
+kubectl rollout status deployment/myapp-deployment
+kubectl rollout history deployment/myapp-deployment
+
+# Обновление из манифеста
+kubectl apply -f deployment-definition.yml
+# Обновление без обновления манифеста (учесть!) простым указанием новой версии образа
+kubectl set image deployment/myappp-deployment nginx=nginx:1.7.1
+
+# ОТКАТ в случае, если что-то пошло не так
+kubectl rollout undo deployment/myapp-deployment
 ```
