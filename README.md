@@ -223,7 +223,7 @@ spec:
           image: nginx
   replicas: 3
   selector:
-    matchlabels:
+    matchLabels:
       type: front-end
 ```
 ```bash
@@ -232,4 +232,42 @@ kubectl get replicaset
 kubectl get pods
 kubectl scale --replicas=6 -f rs-definition.yml
 kubectl get pods
+```
+
+### Deployment
+```txt
+Следующщий уровень абстракции над ReplicaSet
+```
+```yaml
+# eployment-definition.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+```
+```bash
+kubectl create -f deployment-definition.yml
+kubectl get deployments
+kubectl get replicaset
+kubectl get pods
+
+kubectl get all
 ```
