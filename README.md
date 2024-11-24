@@ -233,3 +233,43 @@ kubectl get pods
 kubectl scale --replicas=6 -f rs-definition.yml
 kubectl get pods
 ```
+
+### Сетевое взаимодействие
+```txt
+Каждый pod получает свой адрес во внутреннней сети.
+
+Kubernetes не настраивает, а ожидает, что мы настроим сеть.
+Нужно выбрать плагин для настройки сети.
+```
+
+### Service
+```bash
+Service - служба NodePort прослушивает порт на ноде и перенаправляет запросы на под
+ClusterIP - создает виртуальный IP внутри кластера, чтобы обеспечить связь между службами
+LoadBalancer - балансировщик нагрузки
+
+NodePort 30080 -> Service Port 80 -> Target POD Port 80
+```
+
+```yml
+# service-definition.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+
+spec:
+  type: NodePort
+  ports:
+    - targetPort: 80 # Если не указан, то считается, что равен порту службы (port)
+      port: 80 # Обязательное поле
+      nodePort: 30080 # Если не указан, выделяется автоматически
+  selector:
+    app: myapp
+    type: front-end # определяем поды, к которым создать связь
+```
+
+```bash
+cubectl create -f service-definition.yml
+cubectl get services
+```
