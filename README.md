@@ -223,7 +223,7 @@ spec:
           image: nginx
   replicas: 3
   selector:
-    matchlabels:
+    matchLabels:
       type: front-end
 ```
 ```bash
@@ -232,6 +232,67 @@ kubectl get replicaset
 kubectl get pods
 kubectl scale --replicas=6 -f rs-definition.yml
 kubectl get pods
+```
+
+### Deployment
+```txt
+Следующщий уровень абстракции над ReplicaSet
+```
+```yaml
+# deployment-definition.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+```
+```bash
+kubectl create -f deployment-definition.yml
+kubectl get deployments
+kubectl get replicaset
+kubectl get pods
+
+kubectl get all
+```
+
+### Версионирование и откат Deployments
+```txt
+Rollout - процесс постепенного обновления контейнеров
+
+2 стратегии развертывания
+1: Recreate. Выключение и деплой нового контейнера.
+2: Rolling Update. Останавливается старый, поднимается новый.
+```
+```bash
+kubectl rollout status deployment/myapp-deployment
+kubectl rollout history deployment/myapp-deployment
+
+# Обновление из манифеста
+kubectl apply -f deployment-definition.yml
+# Обновление без обновления манифеста (учесть!) простым указанием новой версии образа
+kubectl set image deployment/myappp-deployment nginx=nginx:1.7.1
+
+# ОТКАТ в случае, если что-то пошло не так
+kubectl rollout undo deployment/myapp-deployment
+```
+
 ```
 
 ### Сетевое взаимодействие
@@ -272,4 +333,78 @@ spec:
 ```bash
 cubectl create -f service-definition.yml
 cubectl get services
+```
+
+```yml
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30004
+  selector:
+    app: myapp
+```
+
+```bash
+kubectl create -f config/service.yaml
+kubectl get services
+```
+
+### ClusterIP Service
+```yml
+# service-definition.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: back-end
+
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 80
+      port: 80
+
+  selector:
+    app: myapp
+    type: back-end
+
+# pod-definition.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+```
+
+### LoadBalancer
+```yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-end
+
+spec:
+  type: LoadBalancer
+  ports:
+    targetPort: 80
+    port: 80
+
+  selector:
+    app: myapp
+    type: front-end
+```
+
+```bash
+kubectl create -f service-definition.yml
 ```
